@@ -10,7 +10,12 @@
     {
       "name": "pr-watch",
       "source": "./plugins/pr-watch",
-      "description": "Watch the PRs Claude pushes: CI status after every push, a stop gate on red CI, and a /babysit-pr skill for fixing CI and resolving review threads."
+      "description": "Watch the PRs Claude pushes: CI status after every push, a stop gate on red CI or unanswered review threads, and a /babysit-pr skill for fixing CI and resolving review threads."
+    },
+    {
+      "name": "stand-up",
+      "source": "./plugins/stand-up",
+      "description": "A stand-up update for the current session: what's done, what's next, and what's blocked."
     }
   ]
 }
