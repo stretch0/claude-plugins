@@ -6,6 +6,8 @@ A [Claude Code](https://claude.com/claude-code) plugin: a small crew of agents f
 | --- | --- |
 | `/crew:review` | Adversarial find-then-refute code review of your branch or a PR |
 | `/crew:babysit` | One pass over a PR: fix CI, answer and resolve review threads, rebase conflicts |
+| `/crew:status` | Merge readiness of the session's PRs: draft, conflicts, behind base, CI, reviews, unresolved threads |
+| `/crew:open` | Open the session's PRs in your browser |
 | `/crew:standup` | Catch up on a session after a break, or a Done / Next / Blockers update for your team |
 
 It also adds **PR-watching hooks** that keep Claude responsible for the PRs it pushes.
@@ -52,6 +54,41 @@ The hooks only look when Claude pushes or tries to stop. A review that arrives a
 ```
 /loop 10m /crew:babysit 123
 ```
+
+## /crew:status
+
+```
+/crew:status          # the PRs this session worked on, plus the current branch's
+/crew:status 412 415  # specific PRs (numbers or URLs)
+/crew:status mine     # every open PR you authored in this repo
+```
+
+Each PR gets a card that leads with a verdict, either **Ready to merge** or **Not ready** followed by every blocker, and then the detail:
+
+```
+### #412 Add retry with backoff to the export worker
+**Not ready:** 1 failing check(s); 2 review thread(s) without a reply from you.
+
+- PR: open, `feat/retry` into `main`, +120 -30 across 6 file(s), updated 2h ago
+- Merge: no conflicts, 3 commit(s) behind `main`
+- CI: 21 passed, 1 failed, 0 running (failing: Test (Python))
+- Reviews: approved by alice; waiting on bob
+- Threads: 3 unresolved, 2 without a reply from you, 1 on outdated code
+- Labels: feature
+- Closes: #398
+```
+
+It also covers draft state, auto-merge, changes requested, and branch protection blocks. A bundled script gathers the data with three read-only GitHub calls per PR, so the cards come out the same every time and run without permission prompts. After the cards, Claude adds at most two lines: anything from the session that explains a card, and the one action that would unblock the most.
+
+## /crew:open
+
+```
+/crew:open            # the PRs this session worked on
+/crew:open 412        # a specific PR
+/crew:open mine       # every open PR you authored in this repo
+```
+
+Opens each PR in your default browser with `gh pr view --web`, and lists the URLs in case the browser didn't open. Above 5 PRs it asks which ones you want instead of opening them all.
 
 ## /crew:standup
 

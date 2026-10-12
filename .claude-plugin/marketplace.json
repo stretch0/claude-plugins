@@ -10,7 +10,7 @@
     {
       "name": "crew",
       "source": "./plugins/crew",
-      "description": "/crew:review for an adversarial code review, /crew:babysit and PR-watching hooks for CI and review threads, and /crew:standup for a session stand-up."
+      "description": "/crew:review for an adversarial code review, /crew:babysit and PR-watching hooks for CI and review threads, /crew:status and /crew:open for the session's PRs, and /crew:standup for a session stand-up."
     }
   ]
 }

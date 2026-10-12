@@ -1,7 +1,7 @@
 {
   "name": "crew",
-  "version": "1.1.0",
-  "description": "A small crew of agents for your coding sessions: an adversarial find-then-refute code review, PR watching that keeps Claude on the hook for CI and review threads, and a stand-up update.",
+  "version": "1.2.0",
+  "description": "A small crew of agents for your coding sessions: an adversarial find-then-refute code review, PR watching that keeps Claude on the hook for CI and review threads, a stand-up update, and PR status and open commands.",
   "author": {
     "name": "Andrew McCallum"
   },
