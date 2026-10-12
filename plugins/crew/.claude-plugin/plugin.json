@@ -1,11 +1,11 @@
 {
   "name": "crew",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A small crew of agents for your coding sessions: an adversarial find-then-refute code review, PR watching that keeps Claude on the hook for CI and review threads, a stand-up update, PR status and open commands, and browser verification of changes against their acceptance criteria.",
   "author": {
     "name": "Andrew McCallum"
   },
-  "repository": "https://github.com/stretch0/claude-plugins",
+  "repository": "https://github.com/stretch0/crew",
   "license": "MIT",
   "keywords": ["code-review", "pull-requests", "ci", "stand-up", "subagents", "hooks"]
 }
