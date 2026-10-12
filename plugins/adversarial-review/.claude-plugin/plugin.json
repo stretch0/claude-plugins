@@ -1,0 +1,11 @@
+{
+  "name": "adversarial-review",
+  "version": "0.1.0",
+  "description": "A find-then-refute code review in your local session: six lens-specific finders on Sonnet, an Opus refuter that tries to disprove every finding, and only the survivors reported.",
+  "author": {
+    "name": "Andrew McCallum"
+  },
+  "repository": "https://github.com/stretch0/claude-plugins",
+  "license": "MIT",
+  "keywords": ["code-review", "review", "security", "bugs", "subagents"]
+}

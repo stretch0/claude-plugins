@@ -16,6 +16,11 @@
       "name": "stand-up",
       "source": "./plugins/stand-up",
       "description": "A stand-up update for the current session: what's done, what's next, and what's blocked."
+    },
+    {
+      "name": "adversarial-review",
+      "source": "./plugins/adversarial-review",
+      "description": "A find-then-refute code review in your local session: six lens-specific finders, an Opus refuter, and only the surviving findings reported."
     }
   ]
 }
