@@ -6,7 +6,7 @@ A [Claude Code](https://claude.com/claude-code) plugin: a small crew of agents f
 | --- | --- |
 | `/crew:review` | Adversarial find-then-refute code review of your branch or a PR |
 | `/crew:babysit` | One pass over a PR: fix CI, answer and resolve review threads, rebase conflicts |
-| `/crew:standup` | Done / Next / Blockers update for the current session |
+| `/crew:standup` | Catch up on a session after a break, or a Done / Next / Blockers update for your team |
 
 It also adds **PR-watching hooks** that keep Claude responsible for the PRs it pushes.
 
@@ -61,9 +61,21 @@ The hooks only look when Claude pushes or tries to stop. A review that arrives a
 /crew:standup just the API work
 ```
 
+Use it when you come back to a session after a while and can't remember where you were. It opens with a **Picking up** block:
+
+```
+**Picking up**
+Goal: add retry with backoff to the export worker (PR #412)
+You stopped: slice 2 of 3, tests for the backoff cap were failing
+Waiting on you: should retries give up after 5 tries or 2 minutes?
+Since you left: CI on #412 finished (1 failing), Copilot left a review, main is 6 commits ahead
+```
+
+Then come **Done**, **Next** and **Blockers**. The first item under Next is the concrete place to start. With an audience such as `for slack`, it drops the Picking up block and gives a team update ready to paste.
+
 The update is built mainly from the conversation. It also reads the git state of the repos the session touched: the branch, uncommitted changes, commits not yet on the base branch, and the open PR with its checks. Those reads catch work that has scrolled out of context and correct the session where git disagrees. Only verified work is listed as done, and every blocker says what it's waiting on. It only reads, and its `git` and `gh` commands run without permission prompts.
 
-You can also just ask "where are we?" and Claude will use it.
+You can also just ask "where was I?", "catch me up" or "where are we?" and Claude will use it.
 
 ## Configuration
 

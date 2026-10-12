@@ -9,7 +9,7 @@
 
 | Plugin | What it does |
 | --- | --- |
-| [crew](plugins/crew/README.md) | `/crew:review` runs an adversarial find-then-refute code review. `/crew:babysit` and the PR-watching hooks keep Claude on the hook for CI and review threads on the PRs it pushes. `/crew:standup` gives a Done / Next / Blockers update for the session. |
+| [crew](plugins/crew/README.md) | `/crew:review` runs an adversarial find-then-refute code review. `/crew:babysit` and the PR-watching hooks keep Claude on the hook for CI and review threads on the PRs it pushes. `/crew:standup` catches you up on a session after a break, or gives your team a Done / Next / Blockers update. |
 
 Plugins install at user scope by default, so they apply to every project you open and nobody else is affected. Pick project scope during install to share a plugin with everyone on a repo.
 
