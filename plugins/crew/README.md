@@ -6,8 +6,8 @@ A [Claude Code](https://claude.com/claude-code) plugin: a small crew of agents f
 | --- | --- |
 | `/crew:review` | Adversarial find-then-refute code review of your branch or a PR |
 | `/crew:babysit` | One pass over a PR: fix CI, answer and resolve review threads, rebase conflicts |
-| `/crew:status` | Merge readiness of the session's PRs: draft, conflicts, behind base, CI, reviews, unresolved threads |
-| `/crew:open` | Open the session's PRs in your browser |
+| `/crew:status` | Merge readiness of the session's open PRs: draft, conflicts, behind base, CI, reviews, unresolved threads |
+| `/crew:open` | Open the session's unmerged PRs in your browser |
 | `/crew:standup` | Catch up on a session after a break, or a Done / Next / Blockers update for your team |
 
 It also adds **PR-watching hooks** that keep Claude responsible for the PRs it pushes.
@@ -69,6 +69,7 @@ Each PR gets a card that leads with a verdict, either **Ready to merge** or **No
 ### #412 Add retry with backoff to the export worker
 **Not ready:** 1 failing check(s); 2 review thread(s) without a reply from you.
 
+- Link: https://github.com/acme/app/pull/412
 - PR: open, `feat/retry` into `main`, +120 -30 across 6 file(s), updated 2h ago
 - Merge: no conflicts, 3 commit(s) behind `main`
 - CI: 21 passed, 1 failed, 0 running (failing: Test (Python))
@@ -77,6 +78,8 @@ Each PR gets a card that leads with a verdict, either **Ready to merge** or **No
 - Labels: feature
 - Closes: #398
 ```
+
+Merged PRs are left out and listed in a one-line footer, unless you name one explicitly. Each card has a plain Link line you can click even where the title link doesn't render.
 
 It also covers draft state, auto-merge, changes requested, and branch protection blocks. A bundled script gathers the data with three read-only GitHub calls per PR, so the cards come out the same every time and run without permission prompts. After the cards, Claude adds at most two lines: anything from the session that explains a card, and the one action that would unblock the most.
 
@@ -88,7 +91,7 @@ It also covers draft state, auto-merge, changes requested, and branch protection
 /crew:open mine       # every open PR you authored in this repo
 ```
 
-Opens each PR in your default browser with `gh pr view --web`, and lists the URLs in case the browser didn't open. Above 5 PRs it asks which ones you want instead of opening them all.
+Opens each PR in your default browser with `gh pr view --web`, and lists the URLs in case the browser didn't open. It skips merged PRs unless you name one explicitly. Above 5 PRs it asks which ones you want instead of opening them all.
 
 ## /crew:standup
 

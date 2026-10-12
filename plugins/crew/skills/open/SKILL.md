@@ -1,6 +1,6 @@
 ---
 name: open
-description: Open the PRs from this session in the browser. Use when the user asks to open, show, or view the PR(s) in the browser or on GitHub.
+description: Open the unmerged PRs from this session in the browser. Use when the user asks to open, show, or view the PR(s) in the browser or on GitHub.
 argument-hint: "[PR numbers or URLs | mine]  (blank = this session's PRs)"
 allowed-tools: Bash(gh pr view:*), Bash(gh pr list:*), Bash(git branch:*), Bash(git rev-parse:*)
 ---
@@ -23,6 +23,10 @@ From `$ARGUMENTS`:
 Prefer full URLs, so PRs from other repos the session touched resolve
 correctly.
 
+Skip PRs that are already merged. Check each one with
+`gh pr view <url> --json number,title,state,url` before opening it. Keep a
+merged PR only when the user named it explicitly.
+
 If that comes to more than 5 PRs, list them and ask which to open rather
 than opening a wall of tabs.
 
@@ -36,5 +40,7 @@ number.
 
 ## 3. Report
 
-One line per PR opened: the number, the title if you know it, and the URL,
-so the user can click it if the browser didn't open.
+One line per PR opened: the number, the title, and the URL, so the user can
+click it if the browser didn't open. If any were skipped as merged, add one
+line listing them. If every PR was merged, say so instead of opening
+anything.

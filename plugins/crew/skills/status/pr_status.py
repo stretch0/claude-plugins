@@ -1,6 +1,9 @@
 """Print a status card for each GitHub PR given on the command line.
 
-Usage: python3 pr_status.py <PR number | PR URL | branch> [...]
+Usage: python3 pr_status.py [--skip-merged] <PR number | PR URL | branch> [...]
+
+With no PR given it reports the current branch's PR. --skip-merged leaves
+merged PRs out of the cards and lists them in one footer line instead.
 
 Run it inside the repository the PRs belong to, or pass full PR URLs. Each
 PR costs three read-only GitHub calls: `gh pr view`, one GraphQL query for
@@ -204,12 +207,11 @@ def merge_line(pr: dict, behind: int | None) -> str:
     return ", ".join(parts)
 
 
-def card(ref: str) -> str:
-    try:
-        pr = json.loads(gh("pr", "view", ref, "--json", PR_FIELDS))
-    except GitHubReadError as error:
-        return f"### {ref}\nCould not read this PR: {error}\n"
+def fetch_pr(ref: str) -> dict:
+    return json.loads(gh("pr", "view", ref, "--json", PR_FIELDS))
 
+
+def card(pr: dict) -> str:
     url = urlparse(pr["url"])
     owner, repo = url.path.strip("/").split("/")[:2]
     host = url.hostname or "github.com"
@@ -221,6 +223,8 @@ def card(ref: str) -> str:
     behind = None if pr["state"] != "OPEN" else commits_behind(owner, repo, pr["baseRefName"], pr["headRefOid"], host)
 
     lines = [f"### [#{pr['number']} {pr['title']}]({pr['url']})", verdict(pr, blockers(pr, checks, threads, behind)), ""]
+    # A bare URL stays clickable in terminals that don't render markdown links.
+    lines.append(f"- **Link:** {pr['url']}")
     draft = " (draft)" if pr.get("isDraft") else ""
     lines.append(
         f"- **PR:** {pr['state'].lower()}{draft}, `{pr['headRefName']}` into `{pr['baseRefName']}`, "
@@ -249,17 +253,39 @@ def card(ref: str) -> str:
     return "\n".join(lines) + "\n"
 
 
-def main() -> None:
-    refs = sys.argv[1:] or [""]
-    print("\n".join(card(ref) if ref else card_for_current_branch() for ref in refs))
-
-
-def card_for_current_branch() -> str:
+def current_branch() -> str:
     try:
-        branch = subprocess.run(["git", "branch", "--show-current"], capture_output=True, text=True, check=True).stdout.strip()
+        result = subprocess.run(["git", "branch", "--show-current"], capture_output=True, text=True, check=True)
     except (subprocess.CalledProcessError, FileNotFoundError):
-        return "No PR given, and this is not a git repository.\n"
-    return card(branch) if branch else "No PR given, and HEAD is detached.\n"
+        return ""
+    return result.stdout.strip()
+
+
+def main() -> None:
+    args = sys.argv[1:]
+    skip_merged = "--skip-merged" in args
+    refs = [arg for arg in args if arg != "--skip-merged"] or [current_branch()]
+    if refs == [""]:
+        print("No PR given, and there is no current branch to look up.")
+        return
+
+    cards, merged = [], []
+    for ref in refs:
+        try:
+            pr = fetch_pr(ref)
+        except GitHubReadError as error:
+            cards.append(f"### {ref}\nCould not read this PR: {error}\n")
+            continue
+        if skip_merged and pr["state"] == "MERGED":
+            merged.append(f"#{pr['number']} {pr['url']}")
+        else:
+            cards.append(card(pr))
+
+    if not cards:
+        cards.append("No open PRs to report.\n")
+    if merged:
+        cards.append("Already merged, not shown: " + ", ".join(merged))
+    print("\n".join(cards))
 
 
 if __name__ == "__main__":

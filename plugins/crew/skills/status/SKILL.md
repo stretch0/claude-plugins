@@ -1,6 +1,6 @@
 ---
 name: status
-description: Show the GitHub status of the PRs from this session, covering whether each is ready to merge, draft state, conflicts, how far behind its base it is, failing CI, reviews, and unresolved review threads. Use when the user asks for PR status, "is it green?", "can I merge?", or "what's left on the PR?".
+description: Show the GitHub status of the open PRs from this session, covering whether each is ready to merge, draft state, conflicts, how far behind its base it is, failing CI, reviews, and unresolved review threads. Use when the user asks for PR status, "is it green?", "can I merge?", or "what's left on the PR?".
 argument-hint: "[PR numbers or URLs | mine]  (blank = this session's PRs)"
 allowed-tools: Bash(python3 ${CLAUDE_SKILL_DIR}/pr_status.py:*), Bash(gh pr list:*), Bash(git branch:*), Bash(git rev-parse:*)
 ---
@@ -28,15 +28,19 @@ correctly. A bare number resolves against the current directory's repo.
 Run, with every PR in one call:
 
 ```
-python3 ${CLAUDE_SKILL_DIR}/pr_status.py <url-or-number> [...]
+python3 ${CLAUDE_SKILL_DIR}/pr_status.py --skip-merged <url-or-number> [...]
 ```
 
-With no arguments it reports the current branch's PR.
+Merged PRs are finished, so `--skip-merged` leaves them out and lists them
+in a one-line footer. Drop the flag only when the user named PRs explicitly,
+because then they asked about those PRs whatever their state. With no PR
+arguments the script reports the current branch's PR.
 
 ## 3. Report
 
-Show the script's output as it is. Its cards already lead with a verdict and
-list every blocker, so don't restate them. Then add at most two lines:
+Show the script's output as it is, including each card's Link line and the
+merged footer. The cards already lead with a verdict and list every blocker,
+so don't restate them. Then add at most two lines:
 
 - If something in the session explains a card (a fix already pushed for the
   failing check, a reply already drafted), say so.
