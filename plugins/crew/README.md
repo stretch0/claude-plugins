@@ -6,6 +6,7 @@ A [Claude Code](https://claude.com/claude-code) plugin: a small crew of agents f
 | --- | --- |
 | `/crew:review` | Adversarial find-then-refute code review of your branch or a PR |
 | `/crew:babysit` | One pass over a PR: fix CI, answer and resolve review threads, rebase conflicts |
+| `/crew:verify` | Check in a real browser that the change meets its acceptance criteria and designs |
 | `/crew:status` | Merge readiness of the session's open PRs: draft, conflicts, behind base, CI, reviews, unresolved threads |
 | `/crew:open` | Open the session's unmerged PRs in your browser |
 | `/crew:standup` | Catch up on a session after a break, or a Done / Next / Blockers update for your team |
@@ -54,6 +55,38 @@ The hooks only look when Claude pushes or tries to stop. A review that arrives a
 ```
 /loop 10m /crew:babysit 123
 ```
+
+## /crew:verify
+
+```
+/crew:verify            # this branch's changes
+/crew:verify 412        # a PR's changes
+/crew:verify the modal  # focus on one part
+```
+
+1. **Understand.** Claude reads the diff, then gathers the acceptance criteria (ACs) and designs from the conversation, the PR description, linked tickets and spec files in the repo. It turns them into a checklist: for each AC, the page, the action and what you should see. If a design is referenced but it can't see it, it asks you for it instead of guessing.
+2. **Start the app.** It uses the app if it's already running. Otherwise it works out how to start it from the project's docs and scripts, and runs the server in the background.
+3. **Verify.** It drives a browser through each checklist item, takes a screenshot and checks that each one actually rendered. It compares against the AC and the design, and checks the console and network log for errors.
+4. **Report.** You get a **Pass** or **Needs work** verdict, then a table with one row per AC (how it was checked, the result and the evidence), design differences, console errors, anything it couldn't verify, and how to stop the app.
+
+**Browsers, in order of preference:**
+1. Your connected Chrome (Claude in Chrome), which reuses your existing sign-ins
+2. The built-in browser
+3. A dev browser such as Playwright or `dev-browser`
+
+If the app needs a sign-in the browser doesn't have, it looks for a development sign-in in the project docs, or asks you to sign in. It never types credentials itself.
+
+**Env files in worktrees.** A git worktree starts without the git-ignored `.env` files, and Claude's guardrails stop it copying them directly. The bundled `copy-env.sh` copies them from your main checkout into the worktree, given paths relative to the repo root:
+
+```
+copy-env.sh .                  # the root's .env and .env.* files
+copy-env.sh apps/web apps/api  # nested folders
+copy-env.sh apps/web/.env.dev  # one file
+```
+
+It skips `.example`, `.sample` and `.template` files, keeps files already in the worktree unless you pass `--overwrite`, refuses paths outside the repo, and prints file names only. Claude runs it for you during `/crew:verify`, and you can run it yourself from the plugin folder.
+
+It only verifies. It never fixes what it finds, and it leaves the app running so you can look for yourself. Only you can start it; Claude won't run it on its own.
 
 ## /crew:status
 
