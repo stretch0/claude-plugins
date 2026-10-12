@@ -1,5 +1,5 @@
 ---
-name: stand-up
+name: standup
 description: Give a stand-up update for the current session covering what's been done, what's next, and any blockers. Use when the user asks for a stand-up, status update, progress summary, or "where are we?".
 argument-hint: "[optional focus or audience, e.g. \"for slack\" or \"just the API work\"]"
 allowed-tools: Bash(git status:*), Bash(git log:*), Bash(git diff:*), Bash(git branch:*), Bash(git rev-parse:*), Bash(git symbolic-ref:*), Bash(gh pr view:*), Bash(gh pr checks:*), Bash(gh pr list:*)

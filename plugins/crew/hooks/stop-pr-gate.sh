@@ -9,11 +9,16 @@
 # its completion notification. `stop_hook_active` allows exactly one forced
 # continuation, so a failure Claude cannot fix does not trap the session.
 #
+# Set CREW_PR_WATCH=0 to turn this hook off.
+#
 # Always exits 0; blocking is expressed as {"decision": "block"} JSON.
 
 set -u
 
 INPUT=$(cat)
+
+# CREW_PR_WATCH=0 turns the PR hooks off and leaves the commands available.
+[[ "${CREW_PR_WATCH:-1}" == "0" ]] && exit 0
 
 PARSED=$(echo "$INPUT" | python3 -c "
 import json, sys
@@ -30,7 +35,7 @@ except Exception:
 [[ -z "$SESSION_ID" ]] && exit 0
 [[ "$STOP_HOOK_ACTIVE" == "true" ]] && exit 0
 
-STATE_FILE="${TMPDIR:-/tmp}/claude-pr-watch-plugin-${SESSION_ID}.tsv"
+STATE_FILE="${TMPDIR:-/tmp}/claude-crew-${SESSION_ID}.tsv"
 [[ -s "$STATE_FILE" ]] || exit 0
 
 # Every surviving line costs a network call on every stop, so lines age out
@@ -100,7 +105,7 @@ print(f\"FAIL\tPR #{pr['number']} ({pr['url']}) failing: {', '.join(bad)}\" if b
         AWAITING=$(cd "$DIR" && python3 "$THREAD_COUNTER" "$PR_URL" 2>/dev/null || echo "")
         if [[ "$AWAITING" =~ ^[0-9]+$ ]] && (( AWAITING > 0 )); then
             PR_NUMBER="${PR_URL##*/}"
-            UNANSWERED="${UNANSWERED}PR #${PR_NUMBER} (${PR_URL}) has ${AWAITING} thread(s), run /pr-watch:babysit-pr ${PR_NUMBER}; "
+            UNANSWERED="${UNANSWERED}PR #${PR_NUMBER} (${PR_URL}) has ${AWAITING} thread(s), run /crew:babysit ${PR_NUMBER}; "
         fi
     fi
 done < <(sort -u "$STATE_FILE")

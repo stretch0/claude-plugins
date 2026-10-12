@@ -1,6 +1,6 @@
 ---
-name: refuter
-description: Adversarially verifies code-review findings by trying to disprove each one against the real code. Launched by the adversarial-review skill after the finders report.
+name: review-refuter
+description: Adversarially verifies code-review findings by trying to disprove each one against the real code. Launched by /crew:review after the finders report.
 tools: Read, Grep, Glob, Bash
 model: opus
 ---

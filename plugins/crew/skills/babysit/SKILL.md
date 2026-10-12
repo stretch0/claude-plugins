@@ -1,13 +1,13 @@
 ---
-name: babysit-pr
-description: One bounded pass over a GitHub PR. Check CI, address review feedback, resolve conflicts, report. Loop-compatible; run the long-running form as /loop <interval> /pr-watch:babysit-pr <n>.
+name: babysit
+description: One bounded pass over a GitHub PR. Check CI, address review feedback, resolve conflicts, report. Loop-compatible; run the long-running form as /loop <interval> /crew:babysit <n>.
 argument-hint: <PR number, or blank to detect from the current branch>
 ---
 
 Make one bounded pass over a PR's outstanding work, then stop. This skill
-never polls or sleeps. Within a session, the plugin's push hook and background
+never polls or sleeps. Within a session, crew's push hook and background
 `gh pr checks --watch` tasks deliver events. Across sessions,
-`/loop <interval> /pr-watch:babysit-pr <n>` re-invokes it on a cadence. Each
+`/loop <interval> /crew:babysit <n>` re-invokes it on a cadence. Each
 invocation does a full pass and ends with a status report.
 
 ## The pass
@@ -64,7 +64,7 @@ invocation does a full pass and ends with a status report.
 - The feedback is security-related or touches deployment.
 
 When you escalate a review thread, also reply in the thread saying it is
-waiting on a human decision. The plugin's stop hook counts unresolved threads
+waiting on a human decision. Crew's stop hook counts unresolved threads
 whose last comment is not yours, so an unanswered escalated thread keeps
 blocking the session from ending.
 

@@ -1,6 +1,6 @@
 ---
-name: finder
-description: Reviews a code diff through one adversarial lens and returns structured findings. Launched by the adversarial-review skill, one instance per lens.
+name: review-finder
+description: Reviews a code diff through one adversarial lens and returns structured findings. Launched by /crew:review, one instance per lens.
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---

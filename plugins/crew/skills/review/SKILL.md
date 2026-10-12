@@ -45,7 +45,7 @@ a docs folder on conventions. Pass the paths you find to every subagent.
 
 ## 2. Find
 
-Launch one `adversarial-review:finder` subagent per lens below, **all six in
+Launch one `crew:review-finder` subagent per lens below, **all six in
 one message** so they run in parallel. Give each one:
 
 - its lens name and description, copied exactly
@@ -96,7 +96,7 @@ lens that raised it. Give each finding an id (F1, F2, ...).
 With no findings, skip to the report.
 
 Otherwise, group the findings by file and launch one
-`adversarial-review:refuter` subagent per group (split any group above 8
+`crew:review-refuter` subagent per group (split any group above 8
 findings), **all in one message**. Give each one the diff command, how to
 read file contents, the project guidance paths, and its findings in full
 (id, severity, file, line, issue, evidence, suggestion).

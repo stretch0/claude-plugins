@@ -8,7 +8,8 @@
 # push with no PR is silent by design: the push usually precedes the PR
 # create, so there is nothing to watch yet.
 #
-# Set PR_WATCH_REQUIRE_SIGNED=1 to also check that GitHub verified the pushed
+# Set CREW_PR_WATCH=0 to turn this hook off.
+# Set CREW_REQUIRE_SIGNED=1 to also check that GitHub verified the pushed
 # commit's signature.
 #
 # Always exits 0: a status watcher must never fail the turn it reports on.
@@ -16,6 +17,9 @@
 set -u
 
 INPUT=$(cat)
+
+# CREW_PR_WATCH=0 turns the PR hooks off and leaves the commands available.
+[[ "${CREW_PR_WATCH:-1}" == "0" ]] && exit 0
 
 # Cheap prefilter before any process spawn: this hook runs on every Bash call
 # and almost none of them push or create a PR. The anchored regexes below
@@ -75,7 +79,7 @@ SHA=$(git -C "$CWD" rev-parse HEAD 2>/dev/null || echo "")
 # Record the pushed branch so stop-pr-gate.sh knows which PRs this session
 # is responsible for.
 if [[ -n "$SESSION_ID" ]] && [[ -n "$BRANCH" ]] && [[ "$BRANCH" != "HEAD" ]]; then
-    STATE_FILE="${TMPDIR:-/tmp}/claude-pr-watch-plugin-${SESSION_ID}.tsv"
+    STATE_FILE="${TMPDIR:-/tmp}/claude-crew-${SESSION_ID}.tsv"
     if ! grep -qsF "$CWD	$BRANCH" "$STATE_FILE" 2>/dev/null; then
         printf '%s\t%s\t%s\n' "$CWD" "$BRANCH" "$(date +%s)" >> "$STATE_FILE" 2>/dev/null || true
     fi
@@ -84,7 +88,7 @@ fi
 SIG="skipped"
 SIG_PID=""
 SIG_FILE=""
-if [[ "${PR_WATCH_REQUIRE_SIGNED:-0}" == "1" ]] && [[ -n "$SHA" ]]; then
+if [[ "${CREW_REQUIRE_SIGNED:-0}" == "1" ]] && [[ -n "$SHA" ]]; then
     # Independent of the PR read below, so run it concurrently.
     SIG_FILE=$(mktemp)
     (cd "$CWD" && gh api "repos/{owner}/{repo}/commits/$SHA" --jq .commit.verification.verified 2>/dev/null > "$SIG_FILE") &
@@ -157,7 +161,7 @@ if conflicting:
 if awaiting.isdigit() and int(awaiting) > 0:
     lines.append(
         f"- {awaiting} review thread(s) are unresolved and waiting on a reply. "
-        f"Run /pr-watch:babysit-pr {number} to answer and resolve them."
+        f"Run /crew:babysit {number} to answer and resolve them."
     )
 if sig not in ("true", "skipped"):
     lines.append(
