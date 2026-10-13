@@ -26,15 +26,17 @@ invocation does a full pass and ends with a status report.
    - **Failing CI**: fetch the failing job's logs (`gh run view <id> --log-failed`),
      classify the failure (lint, typecheck, test, build, or other), fix the
      root cause, commit `fix: address CI failure (<category>)`, and push.
-     Cap: 3 attempts per failure class across all passes, counted from this
-     skill's own PR comments (see Audit trail). Never auto-fix deploy
+     Cap: 3 attempts per failure class across all passes. Count earlier
+     attempts from the branch's history: the commits since the base whose
+     subject is `fix: address CI failure (<category>)`. Never auto-fix deploy
      failures, security findings, or failures you cannot classify; escalate
      those.
-   - **Unresolved review threads**: every thread gets a posted reply and is
-     then resolved. For actionable feedback, make the change, push, and
-     reply with what changed. For a question, answer it in the thread. If
-     you disagree with a suggestion, reply with the reasoning and leave the
-     thread open for the reviewer.
+   - **Unresolved review threads**: every thread gets a reply in the thread
+     and is then resolved. Keep replies to a sentence or two. For actionable
+     feedback, make the change, push, and reply with what changed and the
+     commit's short SHA. For a question, answer it. If you disagree with a
+     suggestion, reply with the reasoning and leave the thread open for the
+     reviewer.
    - **Merge conflicts**: rebase onto the base branch, resolving by
      provenance (this branch owns its new code; the base owns shared
      config). Verify the result builds, then push with `--force-with-lease`.
@@ -68,8 +70,8 @@ waiting on a human decision. Crew's stop hook counts unresolved threads
 whose last comment is not yours, so an unanswered escalated thread keeps
 blocking the session from ending.
 
-## Audit trail
+## What gets posted to the PR
 
-Every push or thread resolution made by a pass gets a PR comment naming what
-was done and which pass attempt it was, so the attempt caps hold across
-invocations and sessions.
+Only replies inside review threads. Never post top-level PR comments, status
+summaries, or notes about what a pass did. The pass's report goes to the
+user in the session, and the commits record the fixes.

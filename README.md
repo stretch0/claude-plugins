@@ -50,7 +50,7 @@ A review runs six Sonnet finders plus one Opus refuter per file with findings, s
 
 A review thread counts as waiting when it's unresolved and its last comment isn't from the account `gh` is logged in as. A thread Claude already answered and left open for the reviewer doesn't count. A comment you leave on your own PR from the same account doesn't count either.
 
-**`/crew:babysit [PR number]`** makes one pass. It fixes failing CI (at most 3 attempts per failure type), replies to and resolves review threads, rebases conflicts, and reports "merge-ready" when everything is clear. It escalates design questions, security findings and deployment failures to you instead of guessing.
+**`/crew:babysit [PR number]`** makes one pass. It fixes failing CI (at most 3 attempts per failure type), replies to and resolves review threads, rebases conflicts, and reports "merge-ready" when everything is clear. It escalates design questions, security findings and deployment failures to you instead of guessing. On the PR itself it only posts short replies inside review threads, never top-level comments or status notes. Its report comes to you in the session.
 
 The hooks only look when Claude pushes or tries to stop. A review that arrives after the session has gone idle won't wake it. To keep working through review feedback while you do something else, loop the command:
 
